@@ -1,7 +1,7 @@
 version: "3.8"
 services: 
   bot:
-    image: #how can I auto-build or build from dockerfile in Git?
+    image: cameronoli/plex-bot:0.1
     networks: 
       - host
     depends_on: torrent
