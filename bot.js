@@ -2,7 +2,7 @@ const { Client, Intents } = require('discord.js');
 const dcord = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const cmd_prefix = '$';
 //const qbit_api = require('qbittorrent-api');
-//const qbt = qbit_api.connect('http://<container_name:port>');
+//const qbt = qbit_api.connect('<can't use contnainer name in swarm>:14715');
 const torrent_error = 'Please use a magent link or a URL to a torrent file. See "$help" for more information.';
 const help_file = 'This is a bot for adding movies or T.V shows to the Plex media server "Beauty"\
 Bot Commands\
@@ -29,7 +29,7 @@ dcord.on('message', messageCreate =>{
     }
     if(command === 'download' || command === 'dl'){
         messageCreate.channel.send('Downloading ' + String(args[0]) + ' with ' + String(args[1]));
-        //qbt.add(args[1], <save_path>, args[0], function (error){messageCreate.channel.send(torrent_error)})
+        //qbt.add(args[1], <save_path (volume - media?)>, args[0], function (error){messageCreate.channel.send(torrent_error)})
     }
     if(command === 'help' || command === 'h'){
         messageCreate.channel.send(help_file)

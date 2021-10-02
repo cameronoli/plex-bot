@@ -1,25 +1,29 @@
-version: "3.9"
+version: "3.8"
 services: 
   bot:
-    image: .
-    #should I use an image stored in a git repo then use "build ."?
-    container_name: discord
-    volumes: 
-      - 
-    restart: unless-stopped
+    image: #how can I auto-build or build from dockerfile in Git?
+    networks: 
+      - host
+    depends_on: torrent
+    restart_policy: on-failure
   torrent:
     image: linuxserver/qbitottrent:latest
-    container_name: qbit
+    networks: 
+      - host
+    depends_on: plex
+    ports:
+      - 14715:14715
     volumes:
-      -
-    restart: unless-stopped
+      - media: #insert container path here
+    restart_policy: on-failure
   plex:
     image: plexinc/pms-docker:latest
-    container_name: plex
+    networks: 
+      - host
     ports: 
       - "32401:32401"
     volumes:
-      -
-    restart: unless-stopped
+      - media: #insert container path here
+    restart_policy: on-failure
 volumes:
-    #I should probably use a LVM so my HDDs appear as a single folder
+    media:
