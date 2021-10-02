@@ -2,6 +2,7 @@ version: "3.9"
 services: 
   bot:
     image: .
+    #should I use an image stored in a git repo then use "build ."?
     container_name: discord
     volumes: 
       - 
@@ -15,6 +16,10 @@ services:
   plex:
     image: plexinc/pms-docker:latest
     container_name: plex
+    ports: 
+      - "32401:32401"
     volumes:
       -
     restart: unless-stopped
+volumes:
+    #I should probably use a LVM so my HDDs appear as a single folder
