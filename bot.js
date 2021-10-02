@@ -27,4 +27,4 @@ dcord.on('message', messageCreate =>{
     }
 });
 
-dcord.login('ODkzMjU1Mjc5OTM5MDU5NzIy.YVYyzg.Vq8l9n5EC9n1SuFfxpTjdYZj208');
+dcord.login('<enter bot token here>');
