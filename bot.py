@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import qbittorrentapi
 
-qbt_client = qbittorrentapi.Client(host='192.168.1.20:8080', username='admin', password='adminadmin')
+qbt_client = qbittorrentapi.Client(host='tasks.torrent:8080', username='admin', password='adminadmin')
 try:
     qbt_client.auth_log_in()
 except qbittorrentapi.LoginFailed as e:
@@ -25,8 +25,7 @@ Bot Commands \n \
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send('pon')
-
+    await ctx.send('pong')
 
 @bot.command()
 async def help(ctx):
@@ -40,4 +39,4 @@ async def download(ctx, cat, link):
 async def p(ctx):
     await ctx.send(version)
 
-bot.run('token')
+bot.run('')
