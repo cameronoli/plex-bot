@@ -1,29 +1,48 @@
 version: "3.8"
 services: 
   bot:
-    image: cameronoli/plex-bot:0.1
-    networks: 
-      - host
-    depends_on: torrent
-    restart_policy: on-failure
+    image: localbot:v6 #cameronoli/plex-bot:0.1
+    #networks: 
+      #- frontend
+    #depends_on: 
+      #torrent:
+        #condition: service_healthy
   torrent:
-    image: linuxserver/qbitottrent:latest
-    networks: 
-      - host
-    depends_on: plex
+    image: linuxserver/qbittorrent:latest
+    hostname: torrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - WEBUI_PORT=8080
+    #networks: 
+      #- frontend
+      #- test_backend
+    #depends_on: 
+      #- plex
     ports:
-      - 14715:14715
+      - 6881:6881
+      - 6881:6881/udp
+      - 8080:8080
     volumes:
-      - media: #insert container path here
-    restart_policy: on-failure
+      #- /test/qbit/config:/config
+      - /disks/movies/movies:/downloads
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080"]
+        interval: 10s
+        timeout: 10s
+        retries: 5
   plex:
-    image: plexinc/pms-docker:latest
-    networks: 
-      - host
+    image: linuxserver/plex:latest
+    hostname: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      - PLEX_CLAIM='claim-VsNs_W3mM7yAd4yyxULp'
+    #networks: 
+      #- backend
     ports: 
-      - "32401:32401"
+      - 32400:32400/tcp
     volumes:
-      - media: #insert container path here
-    restart_policy: on-failure
-volumes:
-    media:
+      - /test/plex/config:/config
+      - /disks/movies/movies:/movies
