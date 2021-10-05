@@ -1,6 +1,7 @@
-FROM node:lts-alpine3.14
-WORKDIR /home/node/app
+FROM python:3
+WORKDIR /usr/src/app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 80
-RUN npm install discord.js
-CMD ["node", "bot.js"]
+CMD ["python", "bot.py"]
