@@ -36,7 +36,7 @@ async def download(ctx, cat, link):
     print(qbt_client.torrents_add(urls=link,category=cat))
 
 @bot.command()
-async def p(ctx):
+async def v(ctx):
     await ctx.send(version)
 
 bot.run('')
