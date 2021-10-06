@@ -2,11 +2,9 @@ version: "3.8"
 services: 
   bot:
     image: localbot:v6 #cameronoli/plex-bot:0.1
-    #networks: 
-      #- frontend
-    #depends_on: 
-      #torrent:
-        #condition: service_healthy
+    hostname: bot
+    networks: 
+      - frontend
   torrent:
     image: linuxserver/qbittorrent:latest
     hostname: torrent
@@ -14,23 +12,16 @@ services:
       - PUID=1000
       - PGID=1000
       - WEBUI_PORT=8080
-    #networks: 
-      #- frontend
-      #- test_backend
-    #depends_on: 
-      #- plex
+    networks: 
+      - frontend
     ports:
       - 6881:6881
       - 6881:6881/udp
-      - 8080:8080
+      - 8080:8080/tcp
     volumes:
-      #- /test/qbit/config:/config
-      - /disks/movies/movies:/downloads
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:8080"]
-        interval: 10s
-        timeout: 10s
-        retries: 5
+      - /test/qbit/config:/config
+      - /disks/redTV/redmovies:/downloads/movies
+      - /disks/redTV/redtv:/downloads/tv
   plex:
     image: linuxserver/plex:latest
     hostname: plex
@@ -38,11 +29,18 @@ services:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      - PLEX_CLAIM='claim-VsNs_W3mM7yAd4yyxULp'
-    #networks: 
-      #- backend
+    networks: 
+      - backend
     ports: 
       - 32400:32400/tcp
     volumes:
       - /test/plex/config:/config
-      - /disks/movies/movies:/movies
+      - /disks/movies/movies:/movies/movies
+      - /disks/redTV/redmovies:/movies/redmovies
+      - /disks/redTV/redtv:/tv/redtv
+      - /disks/movies/tv:/tv/bluetv
+networks:
+  frontend:
+    driver: overlay
+  backend:
+    driver: overlay
