@@ -39,4 +39,4 @@ async def download(ctx, cat, link):
 async def v(ctx):
     await ctx.send(version)
 
-bot.run('')
+bot.run(open("secrets/bot-tokens/prod.txt").readline().strip())
