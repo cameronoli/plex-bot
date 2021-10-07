@@ -35,7 +35,7 @@ async def help(ctx):
 
 @bot.command()
 async def download(ctx, cat, link):
-    if cat != "movie" or cat != "tv":
+    if cat != "movie" and cat != "tv":
         await ctx.send(incorrect_category)
     else:
         try:
