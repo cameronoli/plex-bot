@@ -24,7 +24,7 @@ services:
       - 6881:6881/udp
       - 8080:8080/tcp
     volumes:
-      - ~/projects/plex-bot/config/prod/qbit/config:/config
+      - ~/projects/plex-bot-config/config/prod/qbit/config:/config
       - /disks/redTV/redmovies:/downloads/movies
       - /disks/redTV/redtv:/downloads/tv
   plex:
@@ -39,7 +39,7 @@ services:
     ports: 
       - 32400:32400/tcp
     volumes:
-      - ~/projects/plex-bot/config/prod/plex/config:/config
+      - ~/projects/plex-bot-config/config/prod/plex/config:/config
       - /disks/movies/movies:/movies/movies
       - /disks/redTV/redmovies:/movies/redmovies
       - /disks/redTV/redtv:/tv/redtv
