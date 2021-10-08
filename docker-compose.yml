@@ -1,0 +1,51 @@
+version: "3.8"
+services: 
+  bot:
+    image: cameronoli/plex-bot:1.2
+    hostname: bot
+    networks: 
+      - frontend
+  devbot:
+    image: cameronoli/plex-bot:dev
+    hostname: devbot
+    networks: 
+      - frontend
+  torrent:
+    image: linuxserver/qbittorrent:latest
+    hostname: torrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - WEBUI_PORT=8080
+    networks: 
+      - frontend
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8080:8080/tcp
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/qbit/config:/config
+      - /disks/redTV/redmovies:/downloads/movies
+      - /disks/redTV/redtv:/downloads/tv
+  plex:
+    image: linuxserver/plex:latest
+    hostname: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+    networks: 
+      - backend
+    ports: 
+      - 32400:32400/tcp
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/plex/config:/config
+      - /disks/movies/movies:/movies/movies
+      - /disks/redTV/redmovies:/movies/redmovies
+      - /disks/redTV/redtv:/tv/redtv
+      - /disks/movies/tv:/tv/bluetv
+networks:
+  frontend:
+    driver: overlay
+  backend:
+    driver: overlay
