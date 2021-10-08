@@ -10,7 +10,7 @@ except qbittorrentapi.LoginFailed as e:
 
 version = qbt_client.app.version
 torrent_added = "Wohoo! You've just started the download for your file. Check Plex shortly to watch!"
-invalid_cat = "Is not a valid category. Please use 'movie' or 'tv'."
+invalid_cat = " is not a valid category. Please use 'movie' or 'tv'."
 invalid_link = "The URL/magnet you provided is not valid. Please find another."
 
 bot = commands.Bot(command_prefix='!', help_command=None)
@@ -42,21 +42,21 @@ async def h(ctx):
 @bot.command()
 async def download(ctx, cat, link):
     if cat != "movie" and cat != "tv":
-        await ctx.send(cat, invalid_cat)
+        await ctx.send(cat + invalid_cat)
         return
     try:
-        qbt_client.torrents_add(urls=link,category=cat)
-        await ctx.send(torrent_added)
-    except qbittorrentapi.UnsupportedMediaType415Error as e:
-        print(e)
-        await ctx.send(invalid_link)
+        response = qbt_client.torrents_add(urls=link,category=cat)
+        if response == "Ok.":
+            await ctx.send(torrent_added)
+        else:
+            await ctx.send(invalid_link)
     except Exception as e: 
-        print(e)
+         print(e)
     
 
 @bot.command()
 async def dl(ctx, cat, link):
-    download(ctx, cat, link)
+    await download(ctx, cat, link)
 
 @bot.command()
 async def v(ctx):
