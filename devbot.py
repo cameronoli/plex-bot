@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix='!', help_command=None)
 help_file = '```This is a bot for adding movies or T.V shows to the Plex media server "Beauty" \n \
 \n \
 Bot Commands \n \
-- !h, $help; Returns this message    \n \
+- !h, !help; Returns this message    \n \
 - !ping; Returns "Pong!" \n \
 - !dl, $download type link \n \
     - [type]; Use "movie" when downloading a movie or "tv" when downloading a T.V show \n \
@@ -52,7 +52,7 @@ async def download(ctx, cat, link):
             await ctx.send(invalid_link)
     except Exception as e: 
          print(e)
-    
+
 
 @bot.command()
 async def dl(ctx, cat, link):
@@ -62,4 +62,4 @@ async def dl(ctx, cat, link):
 async def v(ctx):
     await ctx.send(version)
 
-bot.run(open("secrets/bot-tokens/dev.txt").readline().strip())
+bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())

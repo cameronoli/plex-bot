@@ -1,12 +1,12 @@
 version: "3.8"
 services: 
   bot:
-    image: cameronoli/plex-bot:1.3
+    image: cameronoli/plex-bot:1.4
     hostname: bot
     networks: 
       - frontend
     volumes:
-      - ~/projects/plex-bot/secrets/bot-tokens:/secrets/bot-tokens
+      - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
   devbot:
     image: cameronoli/plex-bot:dev
     hostname: devbot

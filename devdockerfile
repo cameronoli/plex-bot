@@ -1,7 +1,8 @@
 FROM python:3
+WORKDIR /usr/src/app/secrets/bot-tokens
 WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-EXPOSE 80
 COPY devbot.py .
+EXPOSE 80
 CMD ["python", "devbot.py"]
