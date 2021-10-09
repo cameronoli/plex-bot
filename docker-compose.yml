@@ -13,7 +13,7 @@ services:
     networks: 
       - frontend
     volumes:
-      - ~/projects/plex-bot/secrets/bot-tokens:/secrets/bot-tokens
+      - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
   torrent:
     image: linuxserver/qbittorrent:latest
     hostname: torrent
