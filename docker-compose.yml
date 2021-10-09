@@ -5,11 +5,15 @@ services:
     hostname: bot
     networks: 
       - frontend
+    volumes:
+      - ~/projects/plex-bot/secrets/bot-tokens:/secrets/bot-tokens
   devbot:
     image: cameronoli/plex-bot:dev
     hostname: devbot
     networks: 
       - frontend
+    volumes:
+      - ~/projects/plex-bot/secrets/bot-tokens:/secrets/bot-tokens
   torrent:
     image: linuxserver/qbittorrent:latest
     hostname: torrent

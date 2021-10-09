@@ -3,5 +3,5 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
-COPY . .
+COPY devbot.py .
 CMD ["python", "devbot.py"]
