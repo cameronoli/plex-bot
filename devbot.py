@@ -62,4 +62,8 @@ async def dl(ctx, cat, link):
 async def v(ctx):
     await ctx.send(version)
 
+@bot.command()
+async def info(ctx):
+    await ctx.send(qbt_client.torrents_info())
+
 bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
