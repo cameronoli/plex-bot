@@ -24,7 +24,8 @@ Bot Commands \n \
     - [link]; You must use either a magnet link or a Url to a torrent file \n \
         E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=Survivor.S41E02.1080p%5D \n \
              - Url: https://rarbg.to/download.php?id=mhy6u3a&h=f5c&f=Survivor.S41E02.1080p.AMZN.WEBRip.DDP5.1.x264-KiNGS%5Brartv%5D-[rarbg.to].torrent \n \
-- !v; Returns the installed version of qbittorrent API\n \
+- !v; Returns the installed version of qbittorrent API \n \
+- !info; Returns info on all torrents \n \
 ```'
 
 @bot.command()
