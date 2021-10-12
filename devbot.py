@@ -65,6 +65,7 @@ async def v(ctx):
 
 @bot.command()
 async def info(ctx):
-    await ctx.send(qbt_client.torrents_info())
+    print(qbt_client.torrents_info())
+    await ctx.send("check the log")
 
 bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
