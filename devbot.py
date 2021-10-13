@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import qbittorrentapi
 
-qbt_client = qbittorrentapi.Client(host='192.168.1.20:8080', username='admin', password='adminadmin')
+qbt_client = qbittorrentapi.Client(host='tasks.torrent:8080', username='admin', password='adminadmin')
 try:
     qbt_client.auth_log_in()
 except qbittorrentapi.LoginFailed as e:
