@@ -65,7 +65,13 @@ async def v(ctx):
 
 @bot.command()
 async def info(ctx):
-    print(qbt_client.torrents_info())
-    await ctx.send("check the log")
+    state = "downloading"
+    live_hashs = []
+    for live_torrents in qbt_client.torrents_info(state):
+        live_hashs += [live_torrents.get(hash)]
+    await ctx.send("This is the list of torrent hashs")
+    await ctx.send(live_hashs)
+    await ctx.send("This is the state of the pieces of the first torrent")
+    await ctx.send(qbt_client.torrents_piece_states(live_hashs[0]))
 
 bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
