@@ -67,8 +67,8 @@ async def v(ctx):
 async def info(ctx):
     state = "downloading"
     live_hashs = []
-    for live_torrents in qbt_client.torrents_info():
-        live_hashs += [live_torrents.get(hash)]
+    for live_torrents in qbt_client.torrents_info(state):
+        live_hashs += [live_torrents.get("hash")]
     await ctx.send("This is the list of torrent hashs")
     await ctx.send(live_hashs)
     await ctx.send("This is the state of the pieces of the first torrent")
