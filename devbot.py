@@ -72,6 +72,6 @@ async def info(ctx):
     await ctx.send("This is the list of torrent hashs")
     await ctx.send(live_hashs)
     await ctx.send("This is the state of the pieces of the first torrent")
-    print(qbt_client.torrents_files(live_hashs[3]))
+    print(qbt_client.torrents_files(live_hashs[0])[3])
 
 bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
