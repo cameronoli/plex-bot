@@ -1,12 +1,20 @@
 import discord
 from discord.ext import commands
 import qbittorrentapi
+import attrdict
+import json
 
-qbt_client = qbittorrentapi.Client(host='tasks.torrent:8080', username='admin', password='adminadmin')
+print("Logging in...")
+
+qbt_client = qbittorrentapi.Client(host='192.168.1.20:8080', username='admin', password='adminadmin')
 try:
     qbt_client.auth_log_in()
 except qbittorrentapi.LoginFailed as e:
     print(e)
+
+print("Logged in.")
+
+#------------------------------------------------------------------------------------------------------
 
 version = qbt_client.app.version
 torrent_added = "Wohoo! You've just started the download for your file. Check Plex shortly to watch!"
@@ -24,7 +32,8 @@ Bot Commands \n \
     - [link]; You must use either a magnet link or a Url to a torrent file \n \
         E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=Survivor.S41E02.1080p%5D \n \
              - Url: https://rarbg.to/download.php?id=mhy6u3a&h=f5c&f=Survivor.S41E02.1080p.AMZN.WEBRip.DDP5.1.x264-KiNGS%5Brartv%5D-[rarbg.to].torrent \n \
-- !v; Returns the installed version of qbittorrent API\n \
+- !v; Returns the installed version of qbittorrent API \n \
+- !info; Returns info on all in-progress torrents \n \
 ```'
 
 @bot.command()
@@ -53,7 +62,6 @@ async def download(ctx, cat, link):
     except Exception as e: 
          print(e)
 
-
 @bot.command()
 async def dl(ctx, cat, link):
     await download(ctx, cat, link)
@@ -62,4 +70,20 @@ async def dl(ctx, cat, link):
 async def v(ctx):
     await ctx.send(version)
 
-bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
+@bot.command()  #this functions is probably going to be superseded when a database container is implemented
+async def info(ctx):
+    state = "downloading"
+    live_info = {}
+    for live_torrents in qbt_client.torrents_info(state):
+        live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
+        live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
+    info_string = "```Current Torrents: \n"
+    for  key, value in live_info.items():
+        info_string += "\n" + key + "\n" + str(value) + "\n"
+    info_string += "```"
+    await ctx.send(info_string)
+
+#------------------------------------------------------------------------------------------------------
+
+#bot.run(open("/usr/src/app/secrets/bot-tokens/dev.txt").readline().strip())
+bot.run(open("/home/cameron/projects/plex-bot/secrets/bot-tokens/dev.txt").readline().strip())

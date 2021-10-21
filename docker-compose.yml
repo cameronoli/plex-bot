@@ -7,13 +7,13 @@ services:
       - frontend
     volumes:
       - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
-  devbot:
-    image: cameronoli/plex-bot:dev
-    hostname: devbot
-    networks: 
-      - frontend
-    volumes:
-      - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
+  # devbot:
+  #   image: localbot #cameronoli/plex-bot:dev
+  #   hostname: devbot
+  #   networks: 
+  #     - frontend
+  #   volumes:
+  #     - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
   torrent:
     image: linuxserver/qbittorrent:latest
     hostname: torrent
