@@ -48,6 +48,15 @@ services:
       - /disks/redTV/redmovies:/movies/redmovies
       - /disks/redTV/redtv:/tv/redtv
       - /disks/movies/tv:/tv/bluetv
+  # db:
+  #   image: postgres
+  #   hostname: postgres
+  #   environment:
+  #     - POSTGRES_PASSWORD_FILE: /run/secrets/postgres-creds/passwd.txt
+  #     - POSTGRES_USER_FILE: /run/secrets/postgres-creds/user.txt
+  #     - POSTGRES_DB_FILE: /run/secrets/postgres-creds/db-name.txt
+  #   volumes:
+  #     - ~/projects/plex-bot/secrets/db-creds:/run/secrets/postgres-creds
 networks:
   frontend:
     driver: overlay
