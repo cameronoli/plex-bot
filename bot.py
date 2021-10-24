@@ -28,11 +28,16 @@ Bot Commands \n \
              - Url: https://rarbg.to/download.php?id=mhy6u3a&h=f5c&f=Survivor.S41E02.1080p.AMZN.WEBRip.DDP5.1.x264-KiNGS%5Brartv%5D-[rarbg.to].torrent \n \
 - $v; Returns the installed version of qbittorrent API \n \
 - $info; Returns info on all in-progress torrents \n \
+- $address; Returns the URL of the Plex server    \n \
 ```'
 
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong')
+
+@bot.command()
+async def address(ctx):
+    await ctx.send('```http://plex.oliverlegacy.net:32400```')
 
 @bot.command()
 async def help(ctx):
