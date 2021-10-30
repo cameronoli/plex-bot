@@ -29,8 +29,8 @@ services:
       - 8080:8080/tcp
     volumes:
       - ~/projects/plex-bot-config/config/prod/qbit/config:/config
-      - /disks/redTV/redmovies:/downloads/movies:z
-      - /disks/redTV/redtv:/downloads/tv:z
+      - /disks/redTV/redmovies:/downloads/movies:Z
+      - /disks/redTV/redtv:/downloads/tv:Z
   plex:
     image: linuxserver/plex:latest
     hostname: plex
