@@ -40,8 +40,6 @@ services:
       - VERSION=docker
     networks: 
       - backend
-    ports: 
-      - 32400:32400/tcp
     volumes:
       - ~/projects/plex-bot-config/config/prod/plex/config:/config
       - /disks/movies/movies:/movies/movies
@@ -57,23 +55,25 @@ services:
   #     - POSTGRES_DB_FILE: /run/secrets/postgres-creds/db-name.txt
   #   volumes:
   #     - ~/projects/plex-bot/secrets/db-creds:/run/secrets/postgres-creds
-  # proxy:
-  #   image: jlesage/nginx-proxy-manager
-  #   hostname: proxy
-  #   ports:
-  #     - 8090:8080
-  #     - 8181:8181
-  #     - 4443:4443
-  #   volumes:
-  #     - ~/projects/plex-bot-config/config/prod:/config:rw
-  #   environment:
-  #     - USER_ID=1000
-  #     - GROUP_ID=1000
-  #   networks:
-  #     - frontend
-  #     - backend
+  proxy:
+    image: jlesage/nginx-proxy-manager
+    hostname: proxy
+    ports:
+      - 8090:8080
+      - 8181:8181
+      - 4443:4443
+      - 22000:22000
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/nginx:/config:rw
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=1000
+    networks:
+      - frontend
+      - backend
 networks:
   frontend:
     driver: overlay
   backend:
     driver: overlay
+    #internal: true
