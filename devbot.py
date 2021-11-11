@@ -3,6 +3,7 @@ from discord.ext import commands
 import qbittorrentapi
 import attrdict
 import json
+import time
 
 print("Logging in...")
 
@@ -79,14 +80,52 @@ async def v(ctx):
 async def info(ctx):
     state = "downloading"
     live_info = {}
-    for live_torrents in qbt_client.torrents_info(state):
-        live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
-        live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
-    info_string = "```Current Torrents: \n"
-    for  key, value in live_info.items():
-        info_string += "\n" + key + "\n" + str(value) + "\n"
-    info_string += "```"
+    if len(qbt_client.torrents_info(state)) > 0:
+        for live_torrents in qbt_client.torrents_info(state):
+            live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
+            live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
+        info_string = "```Current Torrents: \n"
+        for  key, value in live_info.items():
+            info_string += "\n" + key + "\n" + str(value) + "\n"
+        info_string += "```"
+    else:
+        info_string = "```There are no torrents currently downloading.```"
     await ctx.send(info_string)
+
+@bot.command()  #BETA - will be changed when database is implemented
+async def search(ctx, plug, *pat):
+    pattern = " ".join(pat)
+    print(pattern)
+    live_results = {}
+
+    if plug == "movie":
+        plugin = "YTS"
+        cat = "all"
+    elif plug == "tv":
+        plugin = "RARBG"
+        cat = "tv"
+    else:
+        await ctx.send("That is not a valid category. Please use 'movie' or 'tv'.")
+        return
+
+    search_job = qbt_client.search.start(pattern, plugin, cat)
+    search_id = search_job.get("id")
+    print(search_id)
+    while qbt_client.search.status()[0].get("total") < 10:
+        time.sleep(0.5)
+    qbt_client.search.stop(search_id)
+    results_json = qbt_client.search.results(search_id, 10, 0)
+    search_results = results_json.get("results")
+
+    result_card = "```Results: \n"
+    count = 1
+    for r in search_results:
+        result_card += str(count) + ". " + r.get("fileName") + "\n"
+        count += 1
+    result_card += "```"
+
+    await ctx.send(result_card)
+    qbt_client.search.delete(search_id)
 
 #------------------------------------------------------------------------------------------------------
 

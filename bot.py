@@ -73,13 +73,16 @@ async def v(ctx):
 async def info(ctx):
     state = "downloading"
     live_info = {}
-    for live_torrents in qbt_client.torrents_info(state):
-        live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
-        live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
-    info_string = "```Current Torrents: \n"
-    for  key, value in live_info.items():
-        info_string += "\n" + key + "\n" + str(value) + "\n"
-    info_string += "```"
+    if len(qbt_client.torrents_info(state)) > 0:
+        for live_torrents in qbt_client.torrents_info(state):
+            live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
+            live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
+        info_string = "```Current Torrents: \n"
+        for  key, value in live_info.items():
+            info_string += "\n" + key + "\n" + str(value) + "\n"
+        info_string += "```"
+    else:
+        info_string = "```There are no torrents currently downloading.```"
     await ctx.send(info_string)
 
 #------------------------------------------------------------------------------------------------------
