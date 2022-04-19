@@ -71,8 +71,12 @@ async def download(ctx, cat, link):
         response = _download(urls=link,category=cat)
         if response == "Ok.":
             await ctx.send(torrent_added)
+            return True
+            #change to ctx.send(get_progress_card())
+            #delete conversation messages
         else:
             await ctx.send(invalid_link)
+            return False
     except Exception as e: 
          print(e)
 
@@ -88,20 +92,30 @@ async def v(ctx):
     await ctx.send(version)
 
 @bot.command()  #this functions is probably going to be superseded when a database container is implemented
-async def info(ctx):
+#probably going to have to refactor all of this mate. separate the creation and updaing of the card.
+async def info(ctx, messageid=0):
     state = "downloading"
     live_info = {}
+    progress_bar = "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
     if len(qbt_client.torrents_info(state)) > 0:
         for live_torrents in qbt_client.torrents_info(state):
             live_t = qbt_client.torrents_files(live_torrents.get("hash"))[0]
             live_info[live_t.name] = str(round(live_t.progress * 100, 2)) + ' %'
-        info_string = "```Current Torrents: \n"
-        for  key, value in live_info.items():
-            info_string += "\n" + key + "\n" + str(value) + "\n"
-        info_string += "```"
+        if messageid == 0:
+            for  key, value in live_info.items():
+                info_card = "```" + key + "\n" + progress_bar + "   " + str(value) + "```"
+                await ctx.send(info_card)
+                query = "INSERT INTO downloading (messageid, hash) VALUES(%s, %s);"
+                messageid = get_latest_message()
+                qvalues = [messageid, live_t]
+                cur.execute(query, qvalues)
+        else:
+            channel = bot.get_channel(904528686789828648) #this is the channel ID
+            message = await channel.fetch_message(messageid)
+            await message.edit(content = "```" + key + "\n" + progress_bar + "   " + str(value) + "```")
     else:
-        info_string = "```There are no torrents currently downloading.```"
-    await ctx.send(info_string)
+        await ctx.send("```There are no torrents currently downloading.```")
+
 
 @bot.command()  
 async def search(ctx, plug, *pat):
@@ -180,6 +194,7 @@ async def on_reaction_add(reaction, user):
     return reaction, user.id
 
 async def process_search(selection, userid, messageid, convoid):
+    #for the future - implement: if selection in range (10), do the below. else it won't be a download, perhaps add a cancel option
     query = "SELECT searchid FROM searchlink WHERE convoid = %s;"
     cur.execute(query, [convoid])
     searchid = cur.fetchone()[0]
@@ -190,7 +205,23 @@ async def process_search(selection, userid, messageid, convoid):
     query = "SELECT type FROM searchlink WHERE searchid = %s;"
     cur.execute(query, [searchid])
     category = cur.fetchone()[0]
-    _download(url, category)
+    if _download(url, category):
+        get_progress_card() #call info()
+        await end_conversation(convoid)
+        await clear_results(searchid)
+
+async def get_progress_card():
+    pass
+
+async def clear_results(searchid):
+    query = "DELETE FROM results WHERE searchid = %s;"
+    cur.execute(query, [searchid])
+    db.commit()
+
+async def end_conversation(convoid):
+    query = "DELETE FROM conversations WHERE convo_id = %s;"
+    cur.execute(query, [convoid])
+    db.commit()
 
 def get_number_for_react(react):
     react_dict = {"1️⃣":1, "2️⃣":2, "3️⃣":3, "4️⃣":4, "5️⃣":5, "6️⃣":6, "7️⃣":7, "8️⃣":8, "9️⃣":9, "🔟":10}
@@ -201,14 +232,14 @@ async def get_latest_message(): #gets latest message in the channel (in this cas
     message = await channel.fetch_message(channel.last_message_id)
     return message
     
-def create_conversation(starter): #creates a new conversation row in the db and returns it
+def create_conversation(starter): 
     query = '''INSERT INTO conversations (starter) VALUES (%s) RETURNING convo_id;'''
     cur.execute(query, [starter])
     db.commit()
     convo_id = cur.fetchall()[0][0]
     return convo_id
 
-def get_search_card(searchID): #creates and returns search card
+def get_search_card(searchID): 
     query = "SELECT resultID, filename FROM results WHERE searchID = %s;"
     cur.execute(query, [searchID])
     results = cur.fetchall()
