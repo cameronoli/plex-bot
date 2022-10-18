@@ -79,4 +79,3 @@ networks:
     driver: overlay
   backend:
     driver: overlay
-    #internal: true

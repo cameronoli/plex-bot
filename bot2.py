@@ -6,124 +6,16 @@ from discord.ext import commands
 import qbittorrentapi
 import time
 
-<<<<<<< Updated upstream
 qbt_client = qbittorrentapi.Client(host='192.168.1.157:8080', username='admin', password= open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip())
-=======
-'''print("Logging in...")
-
-qbt_client = qbittorrentapi.Client(host='192.168.1.20:8080', username='admin', password='adminadmin')
->>>>>>> Stashed changes
 try:
     qbt_client.auth_log_in()
 except qbittorrentapi.LoginFailed as e:
     print(e)
 print("Logged in.")
 
-<<<<<<< Updated upstream
 plexUrl = 'https://watch.oliverlegacy.net'
 plexToken = open("/home/cameron/projects/plex-bot/secrets/bot-tokens/plex.txt").readline().strip()
 plex = PlexServer(plexUrl, plexToken)
-=======
-print("Connecting to db...")
-db = psycopg2.connect(database="postgres", user="postgres", password="mysecretpassword", host="172.17.0.2", port="5432")
-print("Connected to db.")
-cur = db.cursor()'''
-
-
-#------------------------------------------------------------------------------------------------------
-
-#version = qbt_client.app.version
-torrent_added = "Wohoo! You've just started the download for your file. use !info to check the status of in-progress torrents."
-invalid_cat = " is not a valid category. Please use 'movie' or 'tv'."
-invalid_link = "The URL/magnet you provided is not valid. Please find another."
-
-bot = commands.Bot(command_prefix='$', help_command=None) #make sure to set this to the correct symbol
-_ctx = None
-help_file = '```This is a bot for adding movies or T.V shows to the Plex media server "Beauty" \n \
-\n \
-Bot Commands \n \
-- $address; Returns the URL of the Plex server \n \
-- $dl, $download type link \n \
-    - [type]; Use "movie" when downloading a movie or "tv" when downloading a T.V show \n \
-    - [link]; You must use either a magnet link or a Url to a torrent file \n \
-        E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=Survivor.S41E02.1080p%5D \n \
-             - Url: https://rarbg.to/download.php?id=mhy6u3a&h=f5c&f=Survivor.S41E02.1080p.AMZN.WEBRip.DDP5.1.x264-KiNGS%5Brartv%5D-[rarbg.to].torrent \n \
-- $h, $help; Returns this message \n \
-- $ping; Returns "Pong!" \n \
-- $search type query \n \
-    - [type]; Use "movie" when searching for a movie or "tv" when searching for a T.V show \n \
-    - [query]; Enter whatever you are searching for \n \
-- $v; Returns the installed version of qbittorrent API \n \
-```'
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
-    global _ctx 
-    _ctx = ctx
-
-@bot.command()
-async def address(ctx):
-    await ctx.send('```http://watch.oliverlegacy.net```')
-    global _ctx 
-    _ctx = ctx
-
-@bot.command()
-async def help(ctx):
-    await ctx.send(help_file)
-    global _ctx 
-    _ctx = ctx
-
-@bot.command()
-async def h(ctx):
-    await help(ctx)
-    global _ctx 
-    _ctx = ctx
-
-@bot.command()
-async def download(ctx, cat, link):
-    global _ctx 
-    _ctx = ctx
-    m = await get_latest_message()
-    convoid = create_conversation(m.author.id)
-    time.sleep(1)
-    await record_message(convoid)
-    if cat != "movie" and cat != "tv":
-        await ctx.send(cat + invalid_cat)
-        return
-    try:
-        response = _download(urls=link,category=cat)
-        if response == "Ok.":
-            time.sleep(3)
-            await create_progress_card()
-            delete_messages(convoid)
-            return True
-        else:
-            await ctx.send(invalid_link)
-            return False
-    except Exception as e: 
-         print(e)
-
-def _download(urls, category):
-        return qbt_client.torrents_add(urls=urls,category=category)
-
-@bot.command()
-async def dl(ctx, cat, link):
-    await download(ctx, cat, link)
-
-@bot.command()
-async def v(ctx):
-    await ctx.send(version)
-
-@bot.command()  
-async def search(ctx, plug, *pat):
-    global _ctx 
-    _ctx = ctx
-    m = await get_latest_message()
-    convoid = create_conversation(m.author.id)
-    await record_message(convoid)
-    pattern = " ".join(pat)
->>>>>>> Stashed changes
 
 intents = discord.Intents.default()
 intents.message_content = True
