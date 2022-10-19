@@ -6,9 +6,9 @@ from discord.ext import commands
 import qbittorrentapi
 import time
 
-qbt_client = qbittorrentapi.Client(host='192.168.1.157:8080', username='admin', password= open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip())
+qbit = qbittorrentapi.Client(host='192.168.1.157:8080', username='admin', password= open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip())
 try:
-    qbt_client.auth_log_in()
+    qbit.auth_log_in()
 except qbittorrentapi.LoginFailed as e:
     print(e)
 print("Logged in.")
@@ -139,8 +139,24 @@ def searchPlexTitles(section, searchString):
     return messageString
 
 def searchQBitTorrent(searchString, plugin, category):
-    return "qBitTorrent Results: \n Nothing Yet!"
-        
+    searchJob = qbit.search.start(searchString, plugin, category)
+    searchId = searchJob.get("id")
+    while qbit.search.status()[0].get("total") < 10: #limits results to 10
+        time.sleep(0.5)
+    qbit.search.stop(searchId)
+    resultsJson = qbit.search.results(searchId, 10, 0) #limits results to 10
+    searchResults = resultsJson.get("results")
+
+    count = 1
+    resultString =""   
+    resultString += '''%({0}fileName'''.format(count) + ''')s'''
+    resultDict = dict((r.get("fileName"), r.get("fileUrl")) for r in searchResults)
+        if count < 10:
+            resultString += ''','''
+        count += 1
+    return resultString
+    #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
+     
 bot.run(open("/home/cameron/projects/plex-bot/secrets/bot-tokens/dev.txt").readline().strip())
 
 
