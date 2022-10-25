@@ -59,13 +59,13 @@ def initialButtons():
     
     
     async def searchTvButtonCallback(interaction):
-        await interaction.response.send_modal(searchModal())
+        await interaction.response.send_modal(searchModal("tv"))
     async def downloadTvButtonCallback(interaction):
-        await interaction.response.send_modal(downloadModal())
+        await interaction.response.send_modal(downloadModal("tv"))
     async def searchMovieButtonCallback(interaction):
-        await interaction.response.send_modal(searchModal())
+        await interaction.response.send_modal(searchModal("movie"))
     async def downloadMovieButtonCallback(interaction):
-        await interaction.response.send_modal(downloadModal())
+        await interaction.response.send_modal(downloadModal("movie"))
     async def helpButtonCallback(interaction):
         message, helpView = helpMessage()
         await interaction.response.send_message(message, view=helpView) 
@@ -97,6 +97,8 @@ E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=S
     return helpString, view
 
 class downloadModal(Modal,title="Go Ahead and Download something."):
+    def __init__(self, torrentType):
+        self.torrentType = torrentType
     urlInput = TextInput(label="If you have a URL, paste it here:",required=False,min_length=3)
     magnetInput = TextInput(label="If you have a magnet, paste it here:",required=False,min_length=5)
     async def on_submit(self, interaction):
@@ -109,14 +111,14 @@ class downloadModal(Modal,title="Go Ahead and Download something."):
         await newSession()
                
 class searchModal(Modal, title="What are you looking for?"):
+    def __init__(self, torrentType):
+        self.torrentType = torrentType
     searchInput = TextInput(label="Enter your search query:",required=True,min_length=3)
     async def on_submit(self, interaction):
         await newSession()
-        await interaction.response.send_message(self.searchInput.value)
+        await interaction.response.send_message(search(self.torrentType, self.searchInput.value))
         
-
-@bot.command()  #searches plex titles
-async def search(library, *searchString):
+def search(library, *searchString):
     searchString = " ".join(searchString)
     plexLibrary = ""
     if library == "movie":
@@ -127,7 +129,7 @@ async def search(library, *searchString):
         qBitTorrentPlugin = "RARBG"
     plexTitleResults = searchPlexTitles(plexLibrary, searchString)
     qBitTorrentResults = searchQBitTorrent(searchString, qBitTorrentPlugin, library)
-    return plexTitleResults + "\n \n " + qBitTorrentResults
+    return "'''" + plexTitleResults + "\n \n " + qBitTorrentResults + "'''"
 
 def searchPlexTitles(section, searchString):
     searchResults = plex.library.section(section).search(searchString)
@@ -147,13 +149,10 @@ def searchQBitTorrent(searchString, plugin, category):
     resultsJson = qbit.search.results(searchId, 10, 0) #limits results to 10
     searchResults = resultsJson.get("results")
 
-    count = 1
-    resultString =""   
-    resultString += '''%({0}fileName'''.format(count) + ''')s'''
     resultDict = dict((r.get("fileName"), r.get("fileUrl")) for r in searchResults)
-        if count < 10:
-            resultString += ''','''
-        count += 1
+    resultString =""
+    for resultDictKey in resultDict.keys():
+        resultString += str(resultDict.keys().index(resultDictKey) +1) + resultDictKey + "\n"
     return resultString
     #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
      
