@@ -98,20 +98,16 @@ E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=S
 
 class downloadModal(Modal,title="Go Ahead and Download something."):
     def __init__(self, torrentType):
+        super().__init__()
         self.torrentType = torrentType
-    urlInput = TextInput(label="If you have a URL, paste it here:",required=False,min_length=3)
-    magnetInput = TextInput(label="If you have a magnet, paste it here:",required=False,min_length=5)
+    torrentInput = TextInput(label="Paste your URL or Magnet link here:",required=True,min_length=3)
     async def on_submit(self, interaction):
-        if self.urlInput.value != "":
-            await interaction.response.send_message(self.urlInput.value)
-        elif self.magnetInput.value != "":
-            await interaction.response.send_message(self.magnetInput.value)
-        else:
-            await interaction.response.send_message("Mate, you gotta enter something")
+        await interaction.response.send_message(self.torrentInput.value)    
         await newSession()
                
 class searchModal(Modal, title="What are you looking for?"):
     def __init__(self, torrentType):
+        super().__init__()
         self.torrentType = torrentType
     searchInput = TextInput(label="Enter your search query:",required=True,min_length=3)
     async def on_submit(self, interaction):
@@ -155,7 +151,8 @@ def searchQBitTorrent(searchString, plugin, category):
         resultString += str(resultDict.keys().index(resultDictKey) +1) + resultDictKey + "\n"
     return resultString
     #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
-     
+
+
 bot.run(open("/home/cameron/projects/plex-bot/secrets/bot-tokens/dev.txt").readline().strip())
 
 
