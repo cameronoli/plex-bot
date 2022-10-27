@@ -100,7 +100,7 @@ class downloadModal(Modal,title="Go Ahead and Download something."):
     def __init__(self, torrentType):
         super().__init__()
         self.torrentType = torrentType
-    torrentInput = TextInput(label="Paste your URL or Magnet link here:",required=True,min_length=3)
+    torrentInput = TextInput(label="Paste your URL or Magnet link here:",required=True,min_length=10)
     async def on_submit(self, interaction):
         await interaction.response.send_message(self.torrentInput.value)    
         await newSession()
@@ -111,7 +111,6 @@ class searchModal(Modal, title="What are you looking for?"):
         self.torrentType = torrentType
     searchInput = TextInput(label="Enter your search query:",required=True,min_length=3)
     async def on_submit(self, interaction):
-        await newSession()
         await interaction.response.send_message(search(self.torrentType, self.searchInput.value))
         
 def search(library, *searchString):
@@ -134,6 +133,7 @@ def searchPlexTitles(section, searchString):
     for title in searchResults:
         resultTitles += [title.title]
         messageString += title.title + "\n"
+    print(messageString)
     return messageString
 
 def searchQBitTorrent(searchString, plugin, category):
