@@ -1,22 +1,10 @@
 from classes.searchModal import searchModal
 from classes.downloadModal import downloadModal
-from plexapi.server import PlexServer
 import discord
-from discord.ui import Button, View, Modal, TextInput, Select
+from discord.ui import Button, View
 from discord.ext import commands
-import qbittorrentapi
 import time
 
-qbit = qbittorrentapi.Client(host='192.168.1.157:8080', username='admin', password= open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip())
-try:
-    qbit.auth_log_in()
-except qbittorrentapi.LoginFailed as e:
-    print(e)
-print("Logged in.")
-
-plexUrl = 'https://watch.oliverlegacy.net'
-plexToken = open("/home/cameron/projects/plex-bot/secrets/bot-tokens/plex.txt").readline().strip()
-plex = PlexServer(plexUrl, plexToken)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -96,56 +84,7 @@ E.G. - Magnet: magnet:?xt=urn:btih:f5caf1161cbe9312511cf1c35a75c744e7eb8e67&dn=S
 - $info; Returns info on all in-progress torrents \n \
 ```"
     return helpString, view
-
-
-               
-        
-def search(library, *searchString):
-    searchString = " ".join(searchString)
-    plexLibrary = ""
-    if library == "movie":
-        plexLibrary = "Movies"
-        qBitTorrentPlugin = "YTS"
-        qBitTorrentLibrary = "all"
-    elif library == "tv":
-        plexLibrary = "TV Shows"
-        qBitTorrentPlugin = "RARBG"
-        qBitTorrentLibrary = "tv"
-    plexTitleResults = searchPlexTitles(plexLibrary, searchString)
-    qBitTorrentResults = searchQBitTorrent(searchString, qBitTorrentPlugin, qBitTorrentLibrary)
-    return "'''" + plexTitleResults + "\n \n " + qBitTorrentResults + "'''"
-
-def searchPlexTitles(section, searchString):
-    searchResults = plex.library.section(section).search(searchString)
-    resultTitles = []
-    messageString = "Plex Results: \n"
-    for title in searchResults:
-        resultTitles += [title.title]
-        messageString += title.title + "\n"
-    print(messageString)
-    return messageString
-
-def searchQBitTorrent(searchString, plugin, category):
-    searchJob = qbit.search.start(searchString, plugin, category)
-    searchId = searchJob.get("id")
-    while qbit.search.status()[0].get("total") < 10: #limits results to 10
-        time.sleep(0.5)
-    qbit.search.stop(searchId)
-    resultsJson = qbit.search.results(searchId, 10, 0) #limits results to 10
-    searchResultsList = resultsJson.get("results")
-    resultDict = dict((r.get("fileName"), r.get("fileUrl")) for r in searchResultsList)
-    resultString =""
-    for resultDictKey in resultDict.keys():
-        resultString += str(resultDict.keys().index(resultDictKey) +1) + resultDictKey + "\n" 
-    return resultString
-    #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
-
-def downloadTorrent(torrentType, torrentLink):
-    try:
-        qbit.torrents.add(urls=torrentLink, category=torrentType)
-    except Exception as e: 
-         print(e)
-    
+         
 bot.run(open("/home/cameron/projects/plex-bot/secrets/bot-tokens/dev.txt").readline().strip())
 
 
