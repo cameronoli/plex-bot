@@ -1,6 +1,6 @@
 from plexapi.server import PlexServer
 
-class plexClient():
+class PlexClient():
     def __init__(self, plexUrl, plexToken):
         self.client = PlexServer(plexUrl, plexToken)
         

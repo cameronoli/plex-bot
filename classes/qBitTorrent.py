@@ -1,8 +1,11 @@
 from  qbittorrentapi import Client, LoginFailed
 import time
 
-class qBit():
-    def __init__(self, host:str, username:str, password:str):
+class Qbit():
+    def __init__(self, 
+                 host:str='192.168.1.157:8080', 
+                 username:str='admin', 
+                 password:str=open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip()):
         self.client = Client(host=host, username=username, password=password)
         try:
             self.client.auth_log_in()
@@ -27,8 +30,33 @@ class qBit():
         return resultString
         #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
         
-    def downloadTorrent(self,torrentType, torrentLink):
+    def downloadTorrent(self,torrentType, torrentLink, user):
         try:
-            self.client.torrents.add(urls=torrentLink, category=torrentType)
+            self.client.torrents.add(urls=torrentLink, category=torrentType, tags=user)
         except Exception as e: 
             print(e)
+            
+    def getTorrents(self, filter=None, tag=None):
+            inProgressTorrentList = self.client.torrents_info(status_filter=filter, tag=tag)
+            returnString = "Current Torrents: \n \n"
+            if len(inProgressTorrentList) > 0:
+                for inProgressTorrent in inProgressTorrentList:
+                    if tag != None:
+                        if inProgressTorrent.get("completion_on") >= 0:
+                            resultHash = inProgressTorrent.get("hash")
+                            self.client.torrents_remove_tags(tags=tag, torrent_hashes=resultHash)
+                            return inProgressTorrent.get("name")
+                        else:
+                            return ""
+                    returnString += inProgressTorrent.get("name") + "\n"
+                    returnString += str(round(inProgressTorrent.get("progress") * 100, 2)) + " %" + "\n \n"
+            else:
+                returnString = "There are no torrents currently downloading."
+            return(returnString)
+            
+    
+    def getSubmittedTorrent(self, hash):
+        submittedTorrentList = self.client.torrents_info(torrent_hashes=hash)
+        for submittedTorrent in submittedTorrentList:
+            torrentName = submittedTorrent.get("name")
+        return torrentName

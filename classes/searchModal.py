@@ -1,11 +1,12 @@
 from discord.ui import Modal, TextInput
-from .searchContent import searchContent
+from .searchContent import SearchContent
 import asyncio
-class searchModal(Modal, title="What are you looking for?"):
+
+class SearchModal(Modal, title="What are you looking for?"):
     def __init__(self, torrentType):
         super().__init__(timeout=7)
         self.torrentType = torrentType
-        self.search = searchContent()
+        self.search = SearchContent()
     searchInput = TextInput(label="Enter your search query:",required=True,min_length=3)
     async def on_submit(self, interaction):
         #need to save the lsit of results from qbit to a list[] for the drop-down view \

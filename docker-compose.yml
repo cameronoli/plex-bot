@@ -46,6 +46,7 @@ services:
       - /disks/redTV/redmovies:/movies/redmovies
       - /disks/redTV/redtv:/tv/redtv
       - /disks/movies/tv:/tv/bluetv
+      - /disks/redTV/redmusic:/music/music
   # db:
   #   image: postgres
   #   hostname: postgres
