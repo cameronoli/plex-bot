@@ -11,7 +11,13 @@ class SendUserMessage():
     async def generateMessage(self) -> None:
         torrentName = ""
         while torrentName == "":
-            await asyncio.sleep(20)
+            await asyncio.sleep(10)
             torrentName = self.qClient.getTorrents(tag=self.interaction.user)
-        message = "Hey There! \n I just wanted to let you know that the torrent listed below has completed downloading and is now available on the Plex server. \n \n" + torrentName
+            print("No Torrents just yet. Retrying..")
+        print("Torrents:", torrentName)
+        message = f"Hey {self.interaction.user.mention}! \n I just wanted to let you know that the torrent listed below has completed downloading and is now available on the Plex server. \n \n" + torrentName
+        await self.interaction.user.send(content=message)
+
+    async def generateErrorMessage(self) -> None:
+        message = f"Hey {self.interaction.user.mention}! \n Seems like there was something wrong with the torrent link/URL you provided. \n Can you try again or find another torrent link? Thanks!"
         await self.interaction.user.send(content=message)

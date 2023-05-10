@@ -13,7 +13,7 @@ class InitialButtons():
         self.me = me
         
     
-    def generateButtons(self):
+    def generateButtons(self) -> View:
         searchTvButton = Button(label="Search TV Shows",style=discord.ButtonStyle.primary, custom_id="searchTvButton")
         searchMovieButton = Button(label="Search Movies",style=discord.ButtonStyle.primary, custom_id="searchMovieButton")
         downloadTvButton = Button(label="Download TV Show",style=discord.ButtonStyle.primary, custom_id="downloadTvButton")
@@ -32,7 +32,7 @@ class InitialButtons():
         async def searchTvButtonCallback(interaction):
             await interaction.response.send_modal(SearchModal("tv"))
         async def downloadTvButtonCallback(interaction):
-            await interaction.response.send_modal(DownloadModal("tv"))
+            asyncio.run_coroutine_threadsafe(interaction.response.send_modal(DownloadModal("tv", loop=self.loop)), self.loop)
         async def searchMovieButtonCallback(interaction):
             await interaction.response.send_modal(SearchModal("movie"))
         async def downloadMovieButtonCallback(interaction):
@@ -51,7 +51,7 @@ class InitialButtons():
         currentTorrentsButton.callback = currentTorrentsButtonCallback
         return(view)
     
-    def doneButton(self):
+    def doneButton(self) -> View:
         view =View()
         doneButton = Button(label="Done, Thanks!", style=discord.ButtonStyle.primary, custom_id="doneButton")
         view.add_item(doneButton)

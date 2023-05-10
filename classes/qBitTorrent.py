@@ -13,7 +13,7 @@ class Qbit():
             print(e)
         print("Logged in.")
         
-    def searchQBitTorrent(self,searchString, plugin, category):
+    def searchQBitTorrent(self,searchString, plugin, category) -> str:
         searchJob = self.client.search.start(searchString, plugin, category)
         searchId = searchJob.get("id")
         timer = 1
@@ -30,13 +30,15 @@ class Qbit():
         return resultString
         #maybe instead, have the qbittorrent results display in a drop-down so users can select the torrent to download?
         
-    def downloadTorrent(self,torrentType, torrentLink, user):
+    def downloadTorrent(self,torrentType, torrentLink, user) -> str:
         try:
-            self.client.torrents.add(urls=torrentLink, category=torrentType, tags=user)
+            response = self.client.torrents.add(urls=torrentLink, category=torrentType, tags=user)
         except Exception as e: 
-            print(e)
+            print("Exception: ", e)
+        print("Trying to download torrent: ", response)
+        return response
             
-    def getTorrents(self, filter=None, tag=None):
+    def getTorrents(self, filter=None, tag=None) -> str:
             inProgressTorrentList = self.client.torrents_info(status_filter=filter, tag=tag)
             returnString = "Current Torrents: \n \n"
             if len(inProgressTorrentList) > 0:
@@ -53,9 +55,8 @@ class Qbit():
             else:
                 returnString = "There are no torrents currently downloading."
             return(returnString)
-            
-    
-    def getSubmittedTorrent(self, hash):
+               
+    def getSubmittedTorrent(self, hash) -> str:
         submittedTorrentList = self.client.torrents_info(torrent_hashes=hash)
         for submittedTorrent in submittedTorrentList:
             torrentName = submittedTorrent.get("name")
