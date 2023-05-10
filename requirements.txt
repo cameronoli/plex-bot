@@ -1,2 +1,6 @@
 discord.py
 qbittorrent-api
+plexapi
+discord.ui
+asyncio
+datetime

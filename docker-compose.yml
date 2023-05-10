@@ -1,7 +1,7 @@
 version: "3.8"
 services: 
   bot:
-    image: cameronoli/plex-bot:latest
+    image: cameronoli/plex-bot:dev
     hostname: bot
     networks: 
       - frontend

@@ -1,6 +1,5 @@
 from classes.qBitTorrent import Qbit
 import asyncio
-import time
 
 class SendUserMessage():
     def __init__(self, interaction, loop) -> None:

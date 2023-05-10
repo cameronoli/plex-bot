@@ -3,9 +3,9 @@ import time
 
 class Qbit():
     def __init__(self, 
-                 host:str='192.168.1.157:8080', 
+                 host:str='tasks.torrent:8080', 
                  username:str='admin', 
-                 password:str=open("/home/cameron/projects/plex-bot/secrets/bot-tokens/qbittorrent.txt").readline().strip()):
+                 password:str=open("/usr/src/app/secrets/bot-tokens/qbittorrent.txt").readline().strip()):
         self.client = Client(host=host, username=username, password=password)
         try:
             self.client.auth_log_in()
@@ -44,7 +44,7 @@ class Qbit():
             if len(inProgressTorrentList) > 0:
                 for inProgressTorrent in inProgressTorrentList:
                     if tag != None:
-                        if inProgressTorrent.get("completion_on") >= 0:
+                        if inProgressTorrent.get("state") == "pausedUP":
                             resultHash = inProgressTorrent.get("hash")
                             self.client.torrents_remove_tags(tags=tag, torrent_hashes=resultHash)
                             return inProgressTorrent.get("name")
