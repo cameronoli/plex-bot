@@ -20,6 +20,6 @@ class SearchContent():
         pClient = PlexClient(self.plexUrl, self.plexToken)
         plexTitleResults = pClient.searchPlexTitles(plexLibrary, searchString)
         print('Done with Plex', plexTitleResults)
-        qClient = qBit()
+        qClient = Qbit()
         qBitTorrentResults = qClient.searchQBitTorrent(searchString, qBitTorrentPlugin, qBitTorrentLibrary)
         return "```" + plexTitleResults + "\n \n" + qBitTorrentResults + "```"

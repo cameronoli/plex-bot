@@ -20,7 +20,7 @@ class InitialButtons():
         downloadMovieButton = Button(label="Download Movie",style=discord.ButtonStyle.primary, custom_id="downloadMovieButton")
         helpButton = Button(label="Help",style=discord.ButtonStyle.primary, custom_id="helpButton")
         currentTorrentsButton = Button(label="Currently Downloading",style=discord.ButtonStyle.primary, custom_id="currentTorrentsButton")
-        view = View()
+        view = View(timeout=2592000.0)
         #view.add_item(searchTvButton)
         #view.add_item(searchMovieButton)
         view.add_item(downloadTvButton)

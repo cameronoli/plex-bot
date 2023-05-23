@@ -1,19 +1,12 @@
 version: "3.8"
 services: 
   bot:
-    image: cameronoli/plex-bot:dev
+    image: cameronoli/plex-bot:latest
     hostname: bot
     networks: 
       - frontend
     volumes:
       - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
-  # devbot:
-  #   image: localbot #cameronoli/plex-bot:dev
-  #   hostname: devbot
-  #   networks: 
-  #     - frontend
-  #   volumes:
-  #     - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
   torrent:
     image: linuxserver/qbittorrent:latest
     hostname: torrent
@@ -47,18 +40,6 @@ services:
       - /disks/redTV/redtv:/tv/redtv
       - /disks/movies/tv:/tv/bluetv
       - /disks/redTV/redmusic:/music/music
-  # db:
-  #   image: postgres
-  #   hostname: postgres
-  #   environment:
-  #     - POSTGRES_PASSWORD_FILE: /run/secrets/postgres-creds/passwd.txt
-  #     - POSTGRES_USER_FILE: /run/secrets/postgres-creds/user.txt
-  #     - POSTGRES_DB_FILE: /run/secrets/postgres-creds/db-name.txt
-  #     - PGDATA: /var/lib/postgres/data
-  #   volumes:
-  #     - ~/projects/plex-bot/secrets/db-creds:/run/secrets/postgres-creds
-  #     - ~/projects/plex-bot-config/config/prod/postgres/my-postgres.conf:/etc/postgresql/postgresql.conf
-  #     - ~/projects/plex-bot-config/data/prod/postgres:/var/lib/postgres/data
   proxy:
     image: jlesage/nginx-proxy-manager
     hostname: proxy
