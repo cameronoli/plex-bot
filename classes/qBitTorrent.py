@@ -3,9 +3,9 @@ import time
 
 class Qbit():
     def __init__(self, 
-                 host:str='tasks.torrent:8080', 
-                 username:str='admin', 
-                 password:str=open("/usr/src/app/secrets/bot-tokens/qbittorrent.txt").readline().strip()):
+                 host='tasks.torrent:8080', 
+                 username='admin', 
+                 password=open("/usr/src/app/secrets/bot-tokens/qbittorrent.txt").readline().strip()):
         self.client = Client(host=host, username=username, password=password)
         try:
             self.client.auth_log_in()

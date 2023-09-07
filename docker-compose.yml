@@ -1,13 +1,13 @@
 version: "3.8"
 services: 
-  bot:
+  bot:        #discord bot to download torrents
     image: cameronoli/plex-bot:latest
     hostname: bot
     networks: 
       - frontend
     volumes:
       - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
-  torrent:
+  torrent:    #qbittorrent container
     image: linuxserver/qbittorrent:latest
     hostname: torrent
     environment:
@@ -24,13 +24,22 @@ services:
       - ~/projects/plex-bot-config/config/prod/qbit/config:/config
       - /disks/redTV/redmovies:/downloads/movies:Z
       - /disks/redTV/redtv:/downloads/tv:Z
-  plex:
+  plex:       #plex media server
     image: linuxserver/plex:latest
     hostname: plex
+    deploy:
+      resources:
+        reservations:
+          generic_resources:
+            - discrete_resource_spec:
+                kind: 'NVIDIA-GPU'
+                value: 0
     environment:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     networks: 
       - backend
     volumes:
@@ -40,7 +49,7 @@ services:
       - /disks/redTV/redtv:/tv/redtv
       - /disks/movies/tv:/tv/bluetv
       - /disks/redTV/redmusic:/music/music
-  proxy:
+  proxy:      #nginx proxy
     image: jlesage/nginx-proxy-manager
     hostname: proxy
     ports:
@@ -56,7 +65,120 @@ services:
     networks:
       - frontend
       - backend
-networks:
+  radarr:     #to handle movie subscriptions
+    image: linuxserver/radarr
+    hostname: radarr
+    ports:
+      - 7878:7878
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/radarr:/config
+      - /disks/redTV/redmovies:/movies/red
+      - /disks/movies/movies:/movies/blue
+      - ~/projects/plex-bot-config/empty-dirs:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - frontend
+      - backend
+  sonarr:     #to handle series subscriptions
+    image: linuxserver/sonarr
+    hostname: sonarr
+    ports:
+      - 8989:8989
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/sonarr:/config
+      - /disks/redTV/redtv:/tv/red
+      - /disks/movies/tv:/tv/blue
+      - /disks/redTV/redtv:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - frontend
+      - backend
+  bazarr:     #to handle subtitles
+    image: linuxserver/bazarr
+    hostname: bazarr
+    ports:
+      - 6767:6767
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/bazarr:/config
+      - /disks/redTV/redtv:/tv/red
+      - /disks/movies/tv:/tv/blue
+      - /disks/movies/movies:/movies/blue
+      - /disks/redTV/redmovies:/movies/red
+      - /disks/redTV/redtv:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - frontend
+      - backend
+  overseerr:  #to handle user interaction of sonarr and radarr
+    image: linuxserver/overseerr
+    hostname: overseerr
+    ports:
+      - 5055:5055
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/overseerr:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - backend
+      - frontend
+  tautulli:   #improved monitoring of plex service
+    image: linuxserver/tautulli
+    hostname: tautulli
+    ports:
+      - 8282:8181
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/tautulli:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - backend
+      - frontend
+  jackett:    #handles torrent indexes
+    image: linuxserver/jackett
+    hostname: jackett
+    ports:
+      - 9117:9117
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/jackett:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - backend
+      - frontend
+  sabnzbd:    #handles NZB downloads
+    image: linuxserver/sabnzbd
+    hostname: sabnzbd
+    ports:
+      - 7123:7123
+    volumes:
+      - ~/projects/plex-bot-config/config/prod/sabnzbd:/config
+      - /disks/redTV/redtv:/downloads
+      - /media/cameron/240SSD/sabnzbd-incomplete-dls:/incomplete-downloads
+      - /disks/redTV/redmovies:/movies
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    networks:
+      - backend
+      - frontend
+networks:     #docker networks
   frontend:
     driver: overlay
   backend:

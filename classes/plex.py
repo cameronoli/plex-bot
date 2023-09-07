@@ -5,7 +5,9 @@ class PlexClient():
         self.client = PlexServer(plexUrl, plexToken)
         
     def searchPlexTitles(self, section, searchString):
-        searchResults = self.client.library.section(section).search(searchString)
+        searchResults = self.client.library.section(section)
+        for result in searchResults.search(searchString):
+            print(result)
         resultTitles = []
         messageString = "Plex Results: \n"
         for title in searchResults:
