@@ -1,29 +1,34 @@
 version: "3.8"
+networks:     #docker networks
+  net_frontend:
+    external: true
+  net_backend:
+    external: true
 services: 
   bot:        #discord bot to download torrents
     image: cameronoli/plex-bot:latest
     hostname: bot
     networks: 
-      - frontend
+      - net_frontend
     volumes:
-      - ~/projects/plex-bot/secrets/bot-tokens:/usr/src/app/secrets/bot-tokens
+      - /patriot/media-server/plex-bot/secrets/bot-tokens/prod:/usr/src/app/secrets/bot-tokens
   torrent:    #qbittorrent container
-    image: linuxserver/qbittorrent:latest
+    image: linuxserver/qbittorrent
     hostname: torrent
     environment:
+    #permissions
       - PUID=1000
       - PGID=1000
       - WEBUI_PORT=8080
-    networks: 
-      - frontend
+    networks:
+      - net_backend
     ports:
       - 6881:6881
       - 6881:6881/udp
       - 8080:8080/tcp
     volumes:
-      - ~/projects/plex-bot-config/config/prod/qbit/config:/config
-      - /disks/redTV/redmovies:/downloads/movies:Z
-      - /disks/redTV/redtv:/downloads/tv:Z
+      - /patriot/media-server/config/qbit:/config
+      - /data/torrents/:/data/torrents/
   plex:       #plex media server
     image: linuxserver/plex:latest
     hostname: plex
@@ -41,145 +46,126 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     networks: 
-      - backend
-    volumes:
-      - ~/projects/plex-bot-config/config/prod/plex/config:/config
-      - /disks/movies/movies:/movies/movies
-      - /disks/redTV/redmovies:/movies/redmovies
-      - /disks/redTV/redtv:/tv/redtv
-      - /disks/movies/tv:/tv/bluetv
-      - /disks/redTV/redmusic:/music/music
-  proxy:      #nginx proxy
-    image: jlesage/nginx-proxy-manager
-    hostname: proxy
+      - net_backend
     ports:
-      - 8090:8080
-      - 8181:8181
-      - 4443:4443
-      - 22000:22000
+      - 32400:32400
     volumes:
-      - ~/projects/plex-bot-config/config/prod/nginx:/config:rw
-    environment:
-      - USER_ID=1000
-      - GROUP_ID=1000
-    networks:
-      - frontend
-      - backend
+      - /patriot/media-server/config/plex:/config
+      - /data/media/:/data/media
   radarr:     #to handle movie subscriptions
     image: linuxserver/radarr
     hostname: radarr
     ports:
       - 7878:7878
     volumes:
-      - ~/projects/plex-bot-config/config/prod/radarr:/config
-      - /disks/redTV/redmovies:/movies/red
-      - /disks/movies/movies:/movies/blue
-      - ~/projects/plex-bot-config/empty-dirs:/downloads
+      - /patriot/media-server/config/radarr:/config
+      - /data/:/data
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - frontend
-      - backend
+      - net_frontend
+      - net_backend
   sonarr:     #to handle series subscriptions
     image: linuxserver/sonarr
     hostname: sonarr
     ports:
       - 8989:8989
     volumes:
-      - ~/projects/plex-bot-config/config/prod/sonarr:/config
-      - /disks/redTV/redtv:/tv/red
-      - /disks/movies/tv:/tv/blue
-      - /disks/redTV/redtv:/downloads
+      - /patriot/media-server/config/sonarr:/config
+      - /data/:/data
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - frontend
-      - backend
+      - net_frontend
+      - net_backend
   bazarr:     #to handle subtitles
     image: linuxserver/bazarr
     hostname: bazarr
     ports:
       - 6767:6767
     volumes:
-      - ~/projects/plex-bot-config/config/prod/bazarr:/config
-      - /disks/redTV/redtv:/tv/red
-      - /disks/movies/tv:/tv/blue
-      - /disks/movies/movies:/movies/blue
-      - /disks/redTV/redmovies:/movies/red
-      - /disks/redTV/redtv:/downloads
+      - /patriot/media-server/config/bazarr:/config
+      - /data/:/data
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - frontend
-      - backend
+      - net_frontend
+      - net_backend
   overseerr:  #to handle user interaction of sonarr and radarr
     image: linuxserver/overseerr
     hostname: overseerr
     ports:
       - 5055:5055
     volumes:
-      - ~/projects/plex-bot-config/config/prod/overseerr:/config
+      - /patriot/media-server/config/overseerr:/config
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - backend
-      - frontend
-  tautulli:   #improved monitoring of plex service
-    image: linuxserver/tautulli
-    hostname: tautulli
-    ports:
-      - 8282:8181
-    volumes:
-      - ~/projects/plex-bot-config/config/prod/tautulli:/config
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Pacific/Auckland
-    networks:
-      - backend
-      - frontend
+      - net_backend
+      - net_frontend
   jackett:    #handles torrent indexes
     image: linuxserver/jackett
     hostname: jackett
     ports:
       - 9117:9117
     volumes:
-      - ~/projects/plex-bot-config/config/prod/jackett:/config
+      - /patriot/media-server/config/jackett:/config
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - backend
-      - frontend
+      - net_backend
+      - net_frontend
   sabnzbd:    #handles NZB downloads
     image: linuxserver/sabnzbd
     hostname: sabnzbd
     ports:
       - 7123:7123
     volumes:
-      - ~/projects/plex-bot-config/config/prod/sabnzbd:/config
-      - /disks/redTV/redtv:/downloads
-      - /media/cameron/240SSD/sabnzbd-incomplete-dls:/incomplete-downloads
-      - /disks/redTV/redmovies:/movies
-
+      - /patriot/media-server/config/sabnzbd:/config
+      - /data/usenet/:/data/usenet/
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     networks:
-      - backend
-      - frontend
-networks:     #docker networks
-  frontend:
-    driver: overlay
-  backend:
-    driver: overlay
+      - net_frontend
+  readarr:
+    image: linuxserver/readarr:develop
+    hostname: readarr
+    networks:
+      - net_frontend
+      - net_backend
+    ports:
+      - 8787:8787
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    volumes:
+      - /patriot/media-server/config/readarr/config:/config
+      - /data/:/data
+  calibre-web:
+    image: linuxserver/calibre-web
+    hostname: calibre-web
+    networks:
+      - net_frontend
+      - net_backend
+    ports:
+      - 8083:8083
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Pacific/Auckland
+    volumes:
+      - /patriot/media-server/config/calibre-web/config:/config
+      - /data/:/data

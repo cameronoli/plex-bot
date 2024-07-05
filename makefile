@@ -11,7 +11,7 @@ update:
 	docker pull linuxserver/qbittorrent:latest
 
 stack:
-	docker stack rm prod
-	docker container prune
-	docker stack deploy -c docker-compose.yml prod
-	docker image prune
+	docker stack rm media
+	docker container prune -f
+	docker stack deploy -c docker-compose.yml media
+	docker image prune -f
